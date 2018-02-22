@@ -57,6 +57,9 @@ class CircleProgram: public Renderer {
     printOpenGLInformation();
     
     glClearColor(0.0f,0.0f,0.0f,1.0f);
+    glClearDepthf(0.0f);
+    glDisable(GL_DEPTH_TEST);
+
 
     createShaderProgram();
 
@@ -70,28 +73,46 @@ class CircleProgram: public Renderer {
 
     shaderProgram.activate();
 
+    printOpenGLError( glGetError() );
     
-    printOpenGLError();
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    printOpenGLError( glGetError() );
     
-    if( glGetError() ) {
-      std::printf( "There has been an OpenGL error.\n" );
-    }
+    x = 0.0;
+    
+    matrix[2] = (GLfloat) x;
+    
+    glUniformMatrix3fv(matrixUniform,1,false,matrix);
+    printOpenGLError( glGetError() );
+    
+    glDrawElements(GL_TRIANGLES,3,GL_UNSIGNED_SHORT,0);
+    printOpenGLError( glGetError() );
+    
+    
   }
   
   void render() override {
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     
-    
-    x += 0.0025;
+    x += 0.0015;
     if(x > 1.5) {
       x = -1.5;
     }
     
-    matrix[2] = (GLfloat) x;
+    matrix[6] = (GLfloat) x;
     
-    glUniformMatrix3fv(matrixUniform,1,true,matrix);
+    glUniformMatrix3fv(matrixUniform,1,false,matrix);
     
     glDrawElements(GL_TRIANGLES,3,GL_UNSIGNED_SHORT,0);
+    
+    /*
+    auto error = glGetError();
+    
+    if( error != GL_NO_ERROR) {
+      //printOpenGLError(error);
+      stopBoolean = true;
+    }
+    */
   }
 
  private:
@@ -211,8 +232,8 @@ class CircleProgram: public Renderer {
     matrixUniform = shaderProgram.getUniformLocation("theMatrix");
   }
 
-  void printOpenGLError() {
-    GLenum error = glGetError();
+  void printOpenGLError(GLenum error) {
+    //GLenum error = glGetError();
 
     if(error == GL_NO_ERROR) {
       std::printf("No OpenGL error has occurred.\n");
@@ -221,7 +242,7 @@ class CircleProgram: public Renderer {
     
     std::printf("OpenGL error: ");
     
-    switch(glGetError()) {
+    switch(error) {
       case GL_INVALID_ENUM: std::printf("Invalid enum\n"); break;
       case GL_INVALID_VALUE: std::printf("Invalid value\n"); break;
       case GL_INVALID_OPERATION: std::printf("Invalid operation\n"); break;

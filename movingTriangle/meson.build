@@ -3,7 +3,7 @@ project('SDLTest','cpp',
 )
 src=['MovingTriangle.cpp','GLWindow.cpp','glad.cpp','ShaderProgram.cpp']
 
-SDL = dependency('sdl2' ,version : '>=2.0.7')
+SDL = dependency('sdl2' ,version : '>=2.0.5')
 
 threads = dependency('threads')
 
@@ -13,5 +13,3 @@ program = executable('a.out',src,dependencies : [SDL,threads],
   include_directories: extraIncludeDirectories,
   cpp_pch : 'pch/PrecompiledHeader.hpp'
 )
-
-#  test('Bladiebla',program, timeout: 3600)

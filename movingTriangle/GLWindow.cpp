@@ -135,7 +135,12 @@ class GLWindow::I {
 
     
  
-    window = SDL_CreateWindow("NameOfWindow",0,0,screenWidth,screenHeight,
+    window = SDL_CreateWindow(
+      "NameOfWindow",
+      SDL_WINDOWPOS_UNDEFINED,
+      SDL_WINDOWPOS_UNDEFINED,
+      screenWidth,
+      screenHeight,
       SDL_WINDOW_OPENGL|
       SDL_WINDOW_FULLSCREEN|
       SDL_WINDOW_BORDERLESS
@@ -155,6 +160,8 @@ class GLWindow::I {
 
     setSwapInterval();//The swap interval can only be set after obtaining a valid current context.
 
+    checkHardwareAcceleration();
+    
     loadOpenGLFunctions();
 
     renderer->initializeRendering();
@@ -216,6 +223,18 @@ class GLWindow::I {
       return false;
     }
     return true;
+  }
+
+  void checkHardwareAcceleration() {
+    int i = 0;
+    i = SDL_GL_GetAttribute(SDL_GL_ACCELERATED_VISUAL,&i);
+
+    if(i == 1) {
+      std::printf("There is hardware acceleration.\n");
+    }
+    else {
+      std::printf("There is no hardware acceleration.\n");
+    }
   }
 
   void loadOpenGLFunctions() {
